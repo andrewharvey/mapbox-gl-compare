@@ -18,4 +18,4 @@ var after = new mapboxgl.Map({
   zoom: 0
 });
 
-new mapboxgl.Compare(before, after);
+new mapboxgl.Compare(before, after, true);

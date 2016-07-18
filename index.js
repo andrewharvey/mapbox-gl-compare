@@ -3,7 +3,7 @@
 
 var syncMove = require('mapbox-gl-sync-move');
 
-function Compare(a, b) {
+function Compare(a, b, followCursor) {
   mapboxgl.util.bindHandlers(this);
 
   var swiper = document.createElement('div');
@@ -11,11 +11,17 @@ function Compare(a, b) {
   swiper.addEventListener('mousedown', this._onDown);
   swiper.addEventListener('touchstart', this._onDown);
 
-  this._container = document.createElement('div');
-  this._container.className = 'mapboxgl-compare';
-  this._container.appendChild(swiper);
 
-  a.getContainer().appendChild(this._container);
+  if (followCursor) {
+      a.getContainer().addEventListener('mousemove', this._onDown);
+      b.getContainer().addEventListener('mousemove', this._onDown);
+  } else {
+      this._container = document.createElement('div');
+      this._container.className = 'mapboxgl-compare';
+      this._container.appendChild(swiper);
+
+      a.getContainer().appendChild(this._container);
+  }
 
   this._clippedMap = b;
   this._bounds = b.getContainer().getBoundingClientRect();
@@ -41,8 +47,10 @@ Compare.prototype = {
 
   _setPosition: function(x) {
     var pos = 'translate(' + x + 'px, 0)';
-    this._container.style.transform = pos;
-    this._container.style.WebkitTransform = pos;
+    if (this._container) {
+        this._container.style.transform = pos;
+        this._container.style.WebkitTransform = pos;
+    }
     this._clippedMap.getContainer().style.clip = 'rect(0, 999em, ' + this._bounds.height + 'px,' + x + 'px)';
     this._x = x;
   },
